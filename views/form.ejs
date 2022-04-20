@@ -1,0 +1,114 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <% if(students.length > 0) { %> 
+  <select id="height_select" onchange="changeHeight()">
+  <% students.forEach(student => { %> 
+    <option value="<%= student.height %>"><a id="height_name"><%= student.name %></a></option>
+  <% }) %> 
+  </select>
+  height<input type="text" id="height_input" value="<%= students[0].height %>">
+  <input type="submit" value="submit" id="height_update">
+  <% } %>
+  <br/>
+  <% if(students.length > 0) { %> 
+  <select id="weight_select" onchange="changeWeight()">
+  <% students.forEach(student => { %> 
+    <option value="<%= student.weight %>"><a id="weight_name"><%= student.name %></a></option>
+  <% }) %> 
+  </select>
+  weight<input type="text" id="weight_input" value="<%= students[0].weight %>">
+  <input type="submit" value="submit" id="weight_update">
+  <% } %>
+  <form id="add">
+    user<input type="text" id="add_user">
+    height<input type="number" id="add_height">
+    height<input type="number" id="add_weight">
+    <input type="submit">
+  </form>
+  <% if(students.length > 0) { %> 
+    <select id="del_select">
+    <% students.forEach(student => { %> 
+      <option value="<%= student.name %>"><%= student.name %></option>
+    <% }) %> 
+    </select>
+  <% } %>
+  <input type="submit" value="delete" id="del">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    function changeHeight() {
+      $('#height_input').val($('#height_select').val());
+    }
+    function changeWeight() {
+      $('#weight_input').val($('#weight_select').val());
+    }
+    
+    $('#height_update').click(() => {      
+      $.ajax({
+        url:'/student/' +$('#height_select').find('option:selected').text() + '/' + $('#height_input').val(),
+        dataType: 'text',
+        method: 'post',
+        success: function (res) {
+          alert($('#height_select').find('option:selected').text()+'的身高：'+$('#height_select').val()+'->'+$('#height_input').val());
+        },
+        error: function (err) {
+          alert(err);
+        }
+      })
+    });
+
+    $('#weight_update').click(() => {
+      $.ajax({
+        url:'/studentw/' +$('#weight_select').find('option:selected').text() + '/' + $('#weight_input').val(),
+        dataType: 'text',
+        method: 'post',
+        success: function (res) {
+          alert($('#weight_select').find('option:selected').text()+'的體重：'+$('#weight_select').val()+'->'+$('#weight_input').val());
+        },
+        error: function (err) {
+          alert(err);
+        }
+      })
+    });
+
+    $('#add').submit((e) => {
+      e.preventDefault();      
+      data = { 'user': $('#add_user').val(), 'height': $('#add_height').val(), 'weight': $('#add_weight').val() }
+      $.ajax({
+        url:'/student/add',
+        data: JSON.stringify(data),
+        method: 'post',
+        dataType: 'json',
+        contentType: 'application/json; charset=utf-8',
+        success: function (res) {
+          alert(res.text);
+        },
+        error: function (err) {
+          alert(err.text);
+        }
+      })
+    });
+
+    $('#del').click(() => {
+      var user = $('#del_select').val();
+      $.ajax({
+        url: '/student/delete/'+user,
+        method: 'delete',
+        dataType: 'text',
+        success: function (res) {
+          alert('success');
+        },
+        error: function (err) {
+          alert('fail');
+        }
+      })
+    });
+  </script>
+</body>
+</html>
