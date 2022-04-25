@@ -1,5 +1,4 @@
 const Student = require('../models/student');
-const db = require('../utils/db');
 
 module.exports.home_get = (req, res) => {
     res.send('home');
